@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "experiences.schema.json",
+  "title": "Portfolio experiences",
+  "description": "The canonical structure for PORTFOLIO_HOME/experiences.yml.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["work_history", "milestones"],
+  "properties": {
+    "work_history": {
+      "type": "array",
+      "description": "Professional roles, ordered from newest to oldest.",
+      "items": {
+        "$ref": "#/$defs/workHistoryEntry"
+      }
+    },
+    "milestones": {
+      "type": "array",
+      "description": "Personal or professional milestones.",
+      "items": {
+        "$ref": "#/$defs/milestone"
+      }
+    }
+  },
+  "$defs": {
+    "workHistoryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["role"] },
+        { "required": ["company"] }
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Role or job title."
+        },
+        "company": {
+          "type": "string",
+          "description": "Company, organization, or project name."
+        },
+        "period": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable time range, for example 2024 - present."
+        },
+        "highlights": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "milestone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["year", "brief"],
+      "properties": {
+        "year": {
+          "type": ["string", "integer"],
+          "description": "Year or date label."
+        },
+        "brief": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Short description of the milestone."
+        }
+      }
+    }
+  }
+}

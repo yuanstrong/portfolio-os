@@ -1,0 +1,54 @@
+{
+  "name": "@jarvis/portfolio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "pnpm run build:client && pnpm run build:server && pnpm run prerender",
+    "build:client": "vite build --outDir dist/static",
+    "build:server": "pnpm run build:server:ssr && pnpm run build:server:runtime",
+    "build:server:ssr": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "build:server:runtime": "vite build --ssr server/index.js --outDir dist/server --emptyOutDir=false",
+    "prerender": "node server/prerender.js",
+    "package:artifact": "pnpm run build && node server/prepare-runtime-package.js && pnpm install --prod --dir dist --ignore-scripts --no-frozen-lockfile",
+    "start": "node dist/server/index.js",
+    "preview": "vite preview --outDir dist/static",
+    "clean": "rm -rf dist",
+    "test": "pnpm run test:api && pnpm run test:agents && pnpm run lint",
+    "test:api": "node --import tsx --test src/api/resources.test.ts src/api/auth.test.ts src/api/stream.test.ts server/portfolio-content.test.js server/app.test.js server/artifact.test.js",
+    "test:agents": "node --import tsx --test src/pages/Agents/AgentsPage.test.tsx",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "lucide-react": "^0.546.0",
+    "mermaid": "^11.14.0",
+    "motion": "^12.23.24",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.14.2",
+    "react-syntax-highlighter": "^16.1.1",
+    "remark-gfm": "^4.0.1",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.0",
+    "vite": "^8.0.0"
+  }
+}

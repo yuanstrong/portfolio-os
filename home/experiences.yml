@@ -1,0 +1,34 @@
+work_history:
+  - role: Senior Software Engineer
+    company: SAP Labs China
+    period: June 2024 - Present
+    highlights:
+      - Architected an enterprise-grade AI Agent and knowledge system on SAP Analytics Cloud, translating complex analytics business logic into automated, actionable insights.
+      - Led model selection, prompt and context grounding, and an LLM evaluation framework to reduce hallucinations and measure response reliability for complex analytical queries.
+      - Built end-to-end observability for tracing, latency, cost, and token usage, using interaction logs and failure cases to drive prompt tuning and continuous Agent optimization.
+
+  - role: Frontend Tech Lead
+    company: Yanhuang Data
+    period: January 2021 - May 2024
+    highlights:
+      - Led frontend and mid-tier architecture for a big data analytics platform, building scalable visualization engines and multidimensional reporting dashboards.
+      - Designed and delivered analytics applications for banking and financial clients, covering data cleaning, data modeling, metric calculation, and executive reporting workflows.
+      - Developed internal automation toolchains and AI solutions, including RAG-based domain chatbots and ML anomaly detection, to streamline pre-sales configuration and accelerate client onboarding.
+
+  - role: Senior Software Engineer
+    company: Splunk Inc, Shanghai
+    period: October 2014 - December 2020
+    highlights:
+      - Co-initiated and developed core web and UI frameworks across the global Splunk platform, covering large-scale machine data ingestion, cleaning, modeling, and real-time reporting.
+      - Was one of two engineers responsible for Splunk Core UI in Shanghai and co-initiated the internal open-source UI framework used globally across the company.
+      - Designed scalable Splunk systems as a certified architect, focusing on stability and high-volume daily data indexing.
+      - Built and maintained enterprise analytics applications including ServiceNow App and Splunk Mobile, transforming raw logs and business metrics into analytical dashboards.
+
+  - role: Software Engineer
+    company: SAP Labs China, Shanghai
+    period: July 2011 - October 2013
+    highlights: []
+
+milestones:
+  - year: 2007 - 2011
+    brief: Fudan University - Software Engineering, Bachelor of Computer Science.
