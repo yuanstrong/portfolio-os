@@ -93,6 +93,43 @@ test('returns 404 for an unknown thought', async () => {
   }
 });
 
+test('serves project README and document URLs', async () => {
+  const home = await makePortfolioHome();
+  const staticRoot = await makeStaticRoot();
+  const projectRoot = path.join(home, 'projects', 'jarvis');
+  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.writeFile(
+    path.join(projectRoot, 'README.md'),
+    ['---', 'title: Jarvis', 'brief: A local agent runtime', '---', '', '# Jarvis README'].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(projectRoot, 'architect.md'),
+    ['---', 'title: Jarvis Architecture', '---', '', '# Architecture Body'].join('\n'),
+  );
+
+  const app = createApp({ portfolioHome: home, staticRoot, siteUrl: 'https://shiming.dev' });
+  const { baseUrl, close } = await startServer(app);
+
+  try {
+    const readme = await fetch(`${baseUrl}/projects/jarvis`);
+    assert.equal(readme.status, 200);
+    assert.match(await readme.text(), /Jarvis README/);
+
+    const doc = await fetch(`${baseUrl}/projects/jarvis/architect`);
+    assert.equal(doc.status, 200);
+    const docHtml = await doc.text();
+    assert.match(docHtml, /<title>Jarvis Architecture<\/title>/);
+    assert.match(docHtml, /Architecture Body/);
+    assert.match(docHtml, /\/projects\/jarvis\/architect/);
+    assert.doesNotMatch(docHtml, /\?doc=/);
+
+    const missing = await fetch(`${baseUrl}/projects/jarvis/missing`);
+    assert.equal(missing.status, 404);
+  } finally {
+    await close();
+  }
+});
+
 test('serves a sitemap and robots.txt', async () => {
   const home = await makePortfolioHome();
   const staticRoot = await makeStaticRoot();

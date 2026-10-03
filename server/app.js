@@ -43,6 +43,7 @@ export function createApp({
   app.get(['/', '/thoughts', '/projects', '/experience'], renderPage);
   app.get('/thoughts/:id', renderPage);
   app.get('/projects/:id', renderPage);
+  app.get('/projects/:id/:documentId', renderPage);
 
   app.get('/sitemap.xml', async (req, res) => {
     const urls = await collectSitemapUrls(portfolioHome, siteUrl);

@@ -1,14 +1,12 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { fetchProject, type ProjectDetails } from '../api/resources';
 import { MarkdownContent } from '../components/MarkdownContent';
 import { ResourceError, ResourceLoading } from '../components/ResourceFeedback';
 import { useAsyncResource } from '../hooks/useAsyncResource';
 
 export function ProjectDetail() {
-  const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
+  const { id, documentId } = useParams<{ id: string; documentId?: string }>();
   const projectId = id ? safelyDecodeURIComponent(id) : undefined;
-  const documentPath = searchParams.get('doc');
   const project = useAsyncResource<ProjectDetails>(
     `project:${projectId ?? ''}`,
     async () => {
@@ -43,8 +41,10 @@ export function ProjectDetail() {
     );
   }
 
-  const selectedDocument = documentPath
-    ? project.data.documents.find((document) => document.path === documentPath)
+  const selectedDocument = documentId
+    ? project.data.documents.find(
+        (document) => stripMarkdownExtension(document.path) === safelyDecodeURIComponent(documentId),
+      )
     : undefined;
   const title = selectedDocument?.title || project.data.project_name || project.data.project_id;
   const tags = selectedDocument?.tags ?? project.data.tags;
@@ -87,7 +87,7 @@ export function ProjectDetail() {
               {project.data.documents.map((document) => (
                 <Link
                   key={document.path}
-                  to={`/projects/${encodeURIComponent(project.data.project_id)}?doc=${encodeURIComponent(document.path)}`}
+                  to={`/projects/${encodeURIComponent(project.data.project_id)}/${encodeURIComponent(stripMarkdownExtension(document.path))}`}
                   className="font-code text-sm text-primary hover:underline underline-offset-4"
                 >
                   {document.path}
@@ -115,4 +115,8 @@ function safelyDecodeURIComponent(value: string): string {
   } catch {
     return value;
   }
+}
+
+function stripMarkdownExtension(path: string): string {
+  return path.replace(/\.(md|markdown)$/i, '');
 }

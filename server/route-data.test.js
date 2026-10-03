@@ -63,3 +63,44 @@ test('throws RESOURCE_NOT_FOUND for an unknown thought', async () => {
     (error) => error.code === 'RESOURCE_NOT_FOUND',
   );
 });
+
+async function makeProjectHome() {
+  const home = await makePortfolioHome();
+  const projectRoot = path.join(home, 'projects', 'jarvis');
+  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.writeFile(
+    path.join(projectRoot, 'README.md'),
+    ['---', 'title: Jarvis', 'brief: A local agent runtime', '---', '', '# Jarvis README'].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(projectRoot, 'architect.md'),
+    ['---', 'title: Jarvis Architecture', 'brief: How Jarvis is architected', '---', '', '# Architecture Body'].join('\n'),
+  );
+  return home;
+}
+
+test('maps a project README route to the project', async () => {
+  const home = await makeProjectHome();
+  const route = await loadRouteData(home, '/projects/jarvis', 'https://shiming.dev');
+
+  assert.deepEqual(Object.keys(route.data), ['project:jarvis']);
+  assert.equal(route.meta.title, 'Jarvis');
+  assert.equal(route.meta.canonical, 'https://shiming.dev/projects/jarvis');
+});
+
+test('maps a project document route to the selected document meta', async () => {
+  const home = await makeProjectHome();
+  const route = await loadRouteData(home, '/projects/jarvis/architect', 'https://shiming.dev');
+
+  assert.deepEqual(Object.keys(route.data), ['project:jarvis']);
+  assert.equal(route.meta.title, 'Jarvis Architecture');
+  assert.equal(route.meta.canonical, 'https://shiming.dev/projects/jarvis/architect');
+});
+
+test('throws RESOURCE_NOT_FOUND for an unknown project document', async () => {
+  const home = await makeProjectHome();
+  await assert.rejects(
+    () => loadRouteData(home, '/projects/jarvis/missing', 'https://shiming.dev'),
+    (error) => error.code === 'RESOURCE_NOT_FOUND',
+  );
+});

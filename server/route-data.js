@@ -83,17 +83,51 @@ export async function loadRouteData(portfolioHome, pathname, siteUrl) {
   }
 
   if (pathname.startsWith('/projects/')) {
-    const id = decodeSegment(pathname.slice('/projects/'.length));
+    const segments = pathname.slice('/projects/'.length).split('/').filter(Boolean);
+    if (segments.length < 1 || segments.length > 2) {
+      throw notFound(`No route for ${pathname}`);
+    }
+
+    const id = decodeSegment(segments[0]);
     const project = await loadProject(portfolioHome, id);
     const canonical = `${base}/projects/${encodeURIComponent(id)}`;
+
+    if (segments.length === 1) {
+      return {
+        data: { [`project:${id}`]: project },
+        meta: {
+          title: project.project_name || id,
+          description: project.brief || '',
+          canonical,
+          type: 'article',
+          jsonLd: buildArticleJsonLd(project, canonical),
+        },
+      };
+    }
+
+    const documentId = decodeSegment(segments[1]);
+    const document = project.documents.find(
+      (doc) => stripMarkdownExtension(doc.path) === documentId,
+    );
+    if (!document) {
+      throw notFound(`Document not found: ${documentId}`);
+    }
+
+    const documentCanonical = `${canonical}/${encodeURIComponent(documentId)}`;
     return {
       data: { [`project:${id}`]: project },
       meta: {
-        title: project.project_name || id,
-        description: project.brief || '',
-        canonical,
+        title: document.title || project.project_name || id,
+        description: document.brief || project.brief || '',
+        canonical: documentCanonical,
         type: 'article',
-        jsonLd: buildArticleJsonLd(project, canonical),
+        jsonLd: buildArticleJsonLd(
+          {
+            project_name: document.title || project.project_name,
+            brief: document.brief || project.brief || '',
+          },
+          documentCanonical,
+        ),
       },
     };
   }
@@ -146,6 +180,10 @@ function decodeSegment(value) {
   } catch {
     throw notFound('Invalid encoded path');
   }
+}
+
+function stripMarkdownExtension(path) {
+  return path.replace(/\.(md|markdown)$/i, '');
 }
 
 function notFound(message) {
