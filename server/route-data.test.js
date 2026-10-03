@@ -104,3 +104,44 @@ test('throws RESOURCE_NOT_FOUND for an unknown project document', async () => {
     (error) => error.code === 'RESOURCE_NOT_FOUND',
   );
 });
+
+test('emits Person structured data on the home page', async () => {
+  const home = await makePortfolioHome();
+  const route = await loadRouteData(home, '/', 'https://shiming.dev');
+
+  assert.match(route.meta.jsonLd, /"@type":"Person"/);
+  assert.match(route.meta.jsonLd, /"name":"Shiming Yuan"/);
+});
+
+test('emits Blog structured data on the thoughts list', async () => {
+  const home = await makePortfolioHome();
+  const route = await loadRouteData(home, '/thoughts', 'https://shiming.dev');
+
+  assert.match(route.meta.jsonLd, /"@type":"Blog"/);
+});
+
+test('emits inLanguage, section and tags for a thought', async () => {
+  const home = await makePortfolioHome();
+  await fs.mkdir(path.join(home, 'thoughts'));
+  await fs.writeFile(
+    path.join(home, 'thoughts/zero-depth.md'),
+    [
+      '---',
+      'title: Zero Depth',
+      'brief: Interfaces without shadows',
+      'date: 2026-09-23',
+      'lang: zh',
+      'tags: [ui, accessibility]',
+      'categories: [interface]',
+      '---',
+      '',
+      '# Zero Depth',
+    ].join('\n'),
+  );
+
+  const route = await loadRouteData(home, '/thoughts/zero-depth', 'https://shiming.dev');
+
+  assert.match(route.meta.jsonLd, /"inLanguage":"zh"/);
+  assert.equal(route.meta.section, 'interface');
+  assert.deepEqual(route.meta.tags, ['ui', 'accessibility']);
+});

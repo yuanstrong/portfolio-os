@@ -31,6 +31,7 @@ export async function loadRouteData(portfolioHome, pathname, siteUrl) {
         description: 'Curiosity-driven by nature, builder by choice.',
         canonical: `${base}/`,
         type: 'website',
+        jsonLd: buildPersonJsonLd(base),
       },
     };
   }
@@ -44,6 +45,7 @@ export async function loadRouteData(portfolioHome, pathname, siteUrl) {
         description: 'Musings on deep technical architecture, minimal interfaces, and system resilience. Constantly learning.',
         canonical: `${base}/thoughts`,
         type: 'website',
+        jsonLd: buildBlogJsonLd(`${base}/thoughts`),
       },
     };
   }
@@ -64,6 +66,8 @@ export async function loadRouteData(portfolioHome, pathname, siteUrl) {
         canonical,
         type: 'article',
         publishedTime: summary?.date,
+        section: summary?.categories?.[0],
+        tags: summary?.tags ?? [],
         jsonLd: summary ? buildBlogPostingJsonLd(summary, canonical) : undefined,
       },
     };
@@ -78,6 +82,7 @@ export async function loadRouteData(portfolioHome, pathname, siteUrl) {
         description: "A collection of tools, libraries, and distributed systems I've built over the years.",
         canonical: `${base}/projects`,
         type: 'website',
+        jsonLd: buildCollectionPageJsonLd('Projects', `${base}/projects`),
       },
     };
   }
@@ -141,6 +146,7 @@ export async function loadRouteData(portfolioHome, pathname, siteUrl) {
         description: 'A timeline of professional roles and personal milestones.',
         canonical: `${base}/experience`,
         type: 'website',
+        jsonLd: buildCollectionPageJsonLd('Experience', `${base}/experience`),
       },
     };
   }
@@ -157,6 +163,7 @@ function buildBlogPostingJsonLd(summary, canonical) {
     description: summary.brief,
     datePublished: published,
     dateModified: published,
+    inLanguage: summary.lang,
     author: { '@type': 'Person', name: 'Shiming Yuan' },
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     keywords: (summary.tags ?? []).join(', '),
@@ -171,6 +178,33 @@ function buildArticleJsonLd(project, canonical) {
     description: project.brief,
     author: { '@type': 'Person', name: 'Shiming Yuan' },
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  });
+}
+
+function buildPersonJsonLd(siteUrl) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Shiming Yuan',
+    url: siteUrl,
+  });
+}
+
+function buildBlogJsonLd(url) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Thoughts',
+    url,
+  });
+}
+
+function buildCollectionPageJsonLd(name, url) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name,
+    url,
   });
 }
 
