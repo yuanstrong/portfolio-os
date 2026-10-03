@@ -19,7 +19,7 @@ export function createApp({
   const app = express();
 
   app.use(createResourceMiddleware(portfolioHome));
-  app.use(express.static(staticRoot));
+  app.use(express.static(staticRoot, { index: false }));
 
   const templatePath = path.join(staticRoot, 'index.html');
 
