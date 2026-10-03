@@ -9,12 +9,16 @@ export function ProjectDetail() {
   const [searchParams] = useSearchParams();
   const projectId = id ? safelyDecodeURIComponent(id) : undefined;
   const documentPath = searchParams.get('doc');
-  const project = useAsyncResource<ProjectDetails>(async () => {
-    if (!projectId) {
-      throw new Error('missing project id');
-    }
-    return fetchProject(projectId);
-  }, [id]);
+  const project = useAsyncResource<ProjectDetails>(
+    `project:${projectId ?? ''}`,
+    async () => {
+      if (!projectId) {
+        throw new Error('missing project id');
+      }
+      return fetchProject(projectId);
+    },
+    [id],
+  );
 
   if (project.status === 'loading') {
     return (

@@ -3,7 +3,7 @@ import { ResourceEmpty, ResourceError, ResourceLoading } from '../components/Res
 import { useAsyncResource } from '../hooks/useAsyncResource';
 
 export function Experience() {
-  const experiences = useAsyncResource(fetchExperiences, []);
+  const experiences = useAsyncResource('experiences', fetchExperiences, []);
 
   return (
     <main className="flex-grow w-full max-w-4xl mx-auto px-container-padding py-section-gap flex flex-col gap-[96px]">
