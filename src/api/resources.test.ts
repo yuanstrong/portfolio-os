@@ -66,7 +66,7 @@ test('fetchProjects and fetchExperiences load their resource endpoints', async (
         {
           project_name: 'Jarvis',
           project_id: 'Jarvis',
-          start_date: '2026-04-25',
+          start_date: 'fixture-start-date',
           brief: 'Local agent runtime',
         },
       ]);
@@ -96,7 +96,7 @@ test('fetchProject encodes project ids before loading project details', async ()
     return Response.json({
       project_id: 'jarvis lab',
       project_name: 'Jarvis Lab',
-      start_date: '2026-01-01',
+      start_date: 'fixture-detail-start-date',
       brief: 'A local agent runtime',
       tags: ['agents'],
       categories: [],

@@ -13,6 +13,7 @@ export type ProjectSummary = {
   project_id: string;
   start_date: string;
   end_date: string;
+  updated_at: string;
   brief: string;
   tags: string[];
   categories: string[];

@@ -83,7 +83,7 @@ export async function loadProjects(portfolioHome) {
       const project = await readProject(projectsRoot, entry.name, { includeBodies: false });
       projects.push({
         project,
-        latestMtime: await findLatestProjectFileMtime(path.join(projectsRoot, entry.name)),
+        updatedAt: parseDate(project.updated_at, 0),
       });
     } catch (error) {
       if (error?.code !== 'ENOENT' && error?.code !== 'RESOURCE_NOT_FOUND') {
@@ -93,7 +93,7 @@ export async function loadProjects(portfolioHome) {
   }
 
   return projects
-    .sort((left, right) => right.latestMtime - left.latestMtime || left.project.project_id.localeCompare(right.project.project_id))
+    .sort((left, right) => right.updatedAt - left.updatedAt || left.project.project_id.localeCompare(right.project.project_id))
     .map(({ project }) => project);
 }
 
@@ -305,16 +305,6 @@ async function resolveProjectDirectory(projectsRoot, projectId) {
   return projectRoot;
 }
 
-async function findLatestProjectFileMtime(projectRoot) {
-  const files = await findProjectFiles(projectRoot);
-  if (files.length === 0) {
-    return 0;
-  }
-
-  const stats = await Promise.all(files.map((filePath) => fs.stat(filePath)));
-  return Math.max(...stats.map((stat) => stat.mtimeMs));
-}
-
 async function findProjectFiles(projectRoot, currentDirectory = projectRoot) {
   const entries = await fs.readdir(currentDirectory, { withFileTypes: true });
   const files = [];
@@ -352,6 +342,7 @@ function normalizeProjectFrontmatter(frontmatter, projectId) {
     project_name: stringValue(frontmatter.project_name ?? frontmatter.title),
     start_date: stringValue(frontmatter.start_date ?? frontmatter.date),
     end_date: stringValue(frontmatter.end_date),
+    updated_at: stringValue(frontmatter.updated_at),
     brief: stringValue(frontmatter.brief ?? frontmatter.summary),
     tags: parseList(frontmatter.tags ?? frontmatter.labels),
     categories: parseList(frontmatter.categories),

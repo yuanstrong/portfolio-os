@@ -1,7 +1,8 @@
 ---
 title: Podcast Factory
 brief: A production workflow for turning ideas into structured, publishable podcast episodes.
-start_date: 2026-04-25
+start_date: 2026-05-02
+updated_at: 2026-05-04
 status: active
 tags:
   - automation

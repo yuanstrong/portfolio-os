@@ -1,7 +1,8 @@
 ---
 title: Jarvis
 brief: A local-first agent runtime and content platform for building reliable tools.
-start_date: 2026-04-25
+start_date: 2026-01-25
+updated_at: 2026-09-03
 status: active
 featured: true
 tags:

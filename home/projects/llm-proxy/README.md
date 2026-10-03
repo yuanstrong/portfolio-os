@@ -1,7 +1,8 @@
 ---
 title: LLM Proxy
 brief: A local TypeScript proxy manager for routing Claude-compatible clients to multiple configured LLM providers.
-start_date: 2026-10-03
+start_date: 2026-10-01
+updated_at: 2026-10-03
 status: active
 featured: true
 tags:

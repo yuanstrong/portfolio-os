@@ -51,9 +51,10 @@ the project. Project frontmatter follows
 [schemas/projects.schema.json](schemas/projects.schema.json), and supports
 fields such as `title`, `brief`, `start_date`, `status`, `tags`,
 `categories`, and `featured`.
-Projects are listed by the newest modification time among regular files in
-each project directory, including nested documents and assets. Project IDs are
-used as the stable tie-breaker when modification times are equal.
+Projects are listed by the `updated_at` value in each project's `README.md`
+frontmatter. Use an ISO date or another value that JavaScript can parse as a
+date. Project IDs are used as the stable tie-breaker when `updated_at` values
+are equal or absent.
 
 Thought files support frontmatter fields such as `title`, `tags`,
 `categories`, `date`, `lang`, and `brief` (or `summary`). Set `lang: zh` (or

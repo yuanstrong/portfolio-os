@@ -110,7 +110,8 @@ test('loads project metadata, supporting markdown documents, and static assets',
       '---',
       'title: Jarvis',
       'brief: A local agent runtime',
-      'start_date: 2026-01-01',
+      'start_date: fixture-start-date',
+      'updated_at: 2099-01-10',
       'tags: [agents, runtime]',
       'categories:',
       '  - systems',
@@ -147,8 +148,9 @@ test('loads project metadata, supporting markdown documents, and static assets',
     {
       project_id: 'jarvis',
       project_name: 'Jarvis',
-      start_date: '2026-01-01',
+      start_date: 'fixture-start-date',
       end_date: '',
+      updated_at: '2099-01-10',
       brief: 'A local agent runtime',
       tags: ['agents', 'runtime'],
       categories: ['systems'],
@@ -167,11 +169,12 @@ test('loads project metadata, supporting markdown documents, and static assets',
   ]);
 
   assert.deepEqual(await loadProject(home, 'jarvis'), {
-    project_id: 'jarvis',
-    project_name: 'Jarvis',
-    start_date: '2026-01-01',
-    end_date: '',
-    brief: 'A local agent runtime',
+      project_id: 'jarvis',
+      project_name: 'Jarvis',
+      start_date: 'fixture-start-date',
+      end_date: '',
+      updated_at: '2099-01-10',
+      brief: 'A local agent runtime',
     tags: ['agents', 'runtime'],
     categories: ['systems'],
     status: 'active',
@@ -194,19 +197,25 @@ test('loads project metadata, supporting markdown documents, and static assets',
   assert.equal(asset.body.toString(), '<svg />');
 });
 
-test('sorts projects by the newest file modification time, including nested files', async () => {
+test('sorts projects by README updated_at instead of filesystem modification time', async () => {
   const home = await makePortfolioHome();
   const olderProject = path.join(home, 'projects', 'older');
   const newerProject = path.join(home, 'projects', 'newer');
   await fs.mkdir(path.join(olderProject, 'docs'), { recursive: true });
   await fs.mkdir(newerProject, { recursive: true });
-  await fs.writeFile(path.join(olderProject, 'README.md'), '---\ntitle: Older\n---\n');
+  await fs.writeFile(
+    path.join(olderProject, 'README.md'),
+    '---\ntitle: Older\nupdated_at: 2099-01-03\n---\n',
+  );
   await fs.writeFile(path.join(olderProject, 'docs', 'notes.md'), 'Updated later');
-  await fs.writeFile(path.join(newerProject, 'README.md'), '---\ntitle: Newer\n---\n');
+  await fs.writeFile(
+    path.join(newerProject, 'README.md'),
+    '---\ntitle: Newer\nupdated_at: 2099-01-02\n---\n',
+  );
 
-  await fs.utimes(path.join(olderProject, 'README.md'), new Date('2026-01-01'), new Date('2026-01-01'));
-  await fs.utimes(path.join(olderProject, 'docs', 'notes.md'), new Date('2026-01-03'), new Date('2026-01-03'));
-  await fs.utimes(path.join(newerProject, 'README.md'), new Date('2026-01-02'), new Date('2026-01-02'));
+  await fs.utimes(path.join(olderProject, 'README.md'), new Date('2000-01-01'), new Date('2000-01-01'));
+  await fs.utimes(path.join(olderProject, 'docs', 'notes.md'), new Date('2000-01-01'), new Date('2000-01-01'));
+  await fs.utimes(path.join(newerProject, 'README.md'), new Date('2000-01-04'), new Date('2000-01-04'));
 
   assert.deepEqual(
     (await loadProjects(home)).map((project) => project.project_id),

@@ -36,6 +36,10 @@
       "type": ["string", "integer"],
       "description": "Project end date or present label."
     },
+    "updated_at": {
+      "type": ["string", "integer"],
+      "description": "Last project content update date. README.md uses this for project list ordering."
+    },
     "date": {
       "type": ["string", "integer"],
       "description": "Backward-compatible date alias for start_date."

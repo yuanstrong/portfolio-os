@@ -1,7 +1,8 @@
 ---
 title: JT808
 brief: A reliable toolkit for working with the Chinese vehicle telematics communication protocol.
-start_date: 2026-04-25
+start_date: 2026-04-04
+updated_at: 2026-07-30
 status: active
 tags:
   - telematics
