@@ -42,3 +42,37 @@ test('escapes content to prevent script-tag breakout in initial data', () => {
 
   assert.doesNotMatch(html, /<\/script><script>/);
 });
+
+test('emits site name and default og image on every page', () => {
+  const html = buildHtml({
+    template,
+    meta: { title: 'T', description: '', canonical: 'https://x/', type: 'website' },
+    appHtml: '<main></main>',
+    initialData: {},
+  });
+
+  assert.match(html, /<meta property="og:site_name" content="Shiming Yuan" \/>/);
+  assert.ok(html.includes('<meta property="og:image" content="https://avatars.githubusercontent.com/u/5074089?v=4" />'));
+  assert.ok(html.includes('<meta name="twitter:image" content="https://avatars.githubusercontent.com/u/5074089?v=4" />'));
+  assert.match(html, /<meta property="og:image:alt" content="T" \/>/);
+});
+
+test('emits article section and tags for article pages', () => {
+  const html = buildHtml({
+    template,
+    meta: {
+      title: 'Zero Depth',
+      description: '',
+      canonical: 'https://x/',
+      type: 'article',
+      section: 'smart-home',
+      tags: ['thread', 'matter'],
+    },
+    appHtml: '<main></main>',
+    initialData: {},
+  });
+
+  assert.match(html, /<meta property="article:section" content="smart-home" \/>/);
+  assert.match(html, /<meta property="article:tag" content="thread" \/>/);
+  assert.match(html, /<meta property="article:tag" content="matter" \/>/);
+});

@@ -93,6 +93,25 @@ test('returns 404 for an unknown thought', async () => {
   }
 });
 
+test('serves the home page with rendered content and meta', async () => {
+  const home = await makePortfolioHome();
+  const staticRoot = await makeStaticRoot();
+  const app = createApp({ portfolioHome: home, staticRoot, siteUrl: 'https://shiming.dev' });
+  const { baseUrl, close } = await startServer(app);
+
+  try {
+    const response = await fetch(`${baseUrl}/`);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, /<meta name="description" content="Curiosity-driven by nature, builder by choice." \/>/);
+    assert.match(html, /<link rel="canonical" href="https:\/\/shiming.dev\/" \/>/);
+    assert.match(html, /<h1[^>]*>Shiming Yuan<\/h1>/);
+    assert.doesNotMatch(html, /<!--app-html-->/);
+  } finally {
+    await close();
+  }
+});
+
 test('serves project README and document URLs', async () => {
   const home = await makePortfolioHome();
   const staticRoot = await makeStaticRoot();
