@@ -11,7 +11,8 @@ test('production configuration exposes the compiled server artifact', () => {
   );
 
   assert.equal(packageJson.scripts.start, 'node dist/server/index.js');
-  assert.ok(packageJson.scripts['build:server:runtime']);
+  assert.ok(packageJson.scripts['build:server']);
+  assert.equal(packageJson.scripts['build:server'], 'vite build --ssr server/index.js --outDir dist/server');
   assert.ok(fs.existsSync(path.join(projectRoot, 'server/index.js')));
   assert.ok(fs.existsSync(path.join(projectRoot, 'server/prepare-runtime-package.js')));
 });
