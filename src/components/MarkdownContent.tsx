@@ -57,7 +57,7 @@ export function MarkdownContent({ body, projectId, documentPath = 'README.md' }:
           if (projectId && reference && isMarkdownPath(reference.path)) {
             return (
               <Link
-                to={`/projects/${encodeURIComponent(projectId)}?doc=${encodeURIComponent(reference.path)}${reference.suffix}`}
+                to={`/projects/${encodeURIComponent(projectId)}/${encodeURIComponent(stripMarkdownExtension(reference.path))}${reference.suffix}`}
                 className="text-primary hover:text-emerald-400 hover:underline underline-offset-4 transition-colors"
                 {...props}
               >
@@ -134,4 +134,8 @@ function projectAssetUrl(projectId: string, relativePath: string) {
 
 function isMarkdownPath(relativePath: string) {
   return /\.(?:md|markdown)$/i.test(relativePath);
+}
+
+function stripMarkdownExtension(path: string) {
+  return path.replace(/\.(md|markdown)$/i, '');
 }

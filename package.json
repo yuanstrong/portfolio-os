@@ -17,7 +17,7 @@
     "preview": "vite preview --outDir dist/static",
     "clean": "rm -rf dist",
     "test": "pnpm run test:api && pnpm run test:agents && pnpm run lint",
-    "test:api": "node --import tsx --test src/api/resources.test.ts src/api/auth.test.ts src/api/stream.test.ts src/hooks/useAsyncResource.test.tsx src/entry-server.test.tsx server/portfolio-content.test.js server/app.test.js server/artifact.test.js server/route-data.test.js server/build-html.test.js server/sitemap.test.js",
+    "test:api": "node --import tsx --test src/api/resources.test.ts src/api/auth.test.ts src/api/stream.test.ts src/hooks/useAsyncResource.test.tsx src/entry-server.test.tsx src/components/MarkdownContent.test.tsx server/portfolio-content.test.js server/app.test.js server/artifact.test.js server/route-data.test.js server/build-html.test.js server/sitemap.test.js",
     "test:agents": "node --import tsx --test src/pages/Agents/AgentsPage.test.tsx",
     "lint": "tsc --noEmit"
   },
