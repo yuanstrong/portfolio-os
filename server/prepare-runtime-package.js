@@ -9,7 +9,19 @@ const rootPackage = JSON.parse(
   await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'),
 );
 
-const runtimeDependencyNames = ['dotenv', 'express', 'yaml'];
+const runtimeDependencyNames = [
+  'dotenv',
+  'express',
+  'yaml',
+  'react',
+  'react-dom',
+  'react-router-dom',
+  'react-markdown',
+  'remark-gfm',
+  'react-syntax-highlighter',
+  'mermaid',
+  'lucide-react',
+];
 const runtimeDependencies = Object.fromEntries(
   runtimeDependencyNames.map((name) => {
     const version = rootPackage.dependencies?.[name];

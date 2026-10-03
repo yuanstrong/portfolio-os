@@ -9,9 +9,9 @@ import { ResourceEmpty, ResourceError, ResourceLoading } from '../components/Res
 import { useAsyncResource } from '../hooks/useAsyncResource';
 
 export function Home() {
-  const thoughts = useAsyncResource(fetchThoughts, []);
-  const projects = useAsyncResource(fetchProjects, []);
-  const experiences = useAsyncResource(fetchExperiences, []);
+  const thoughts = useAsyncResource('thoughts', fetchThoughts, []);
+  const projects = useAsyncResource('projects', fetchProjects, []);
+  const experiences = useAsyncResource('experiences', fetchExperiences, []);
   const recentThoughts =
     thoughts.status === 'ready'
       ? [...thoughts.data].sort((left, right) => right.date - left.date).slice(0, 3)

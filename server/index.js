@@ -11,10 +11,12 @@ dotenv.config({ path: path.resolve(artifactRoot, '..', '.env') });
 const portfolioHome = process.env.PORTFOLIO_HOME
   ? path.resolve(process.cwd(), process.env.PORTFOLIO_HOME)
   : undefined;
+const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
 const port = Number(process.env.PORT ?? 3000);
 const app = createApp({
   portfolioHome,
   staticRoot: path.join(artifactRoot, 'static'),
+  siteUrl,
 });
 
 app.listen(port, '0.0.0.0', () => {

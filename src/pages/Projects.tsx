@@ -4,7 +4,7 @@ import { ResourceEmpty, ResourceError, ResourceLoading } from '../components/Res
 import { useAsyncResource } from '../hooks/useAsyncResource';
 
 export function Projects() {
-  const projects = useAsyncResource(fetchProjects, []);
+  const projects = useAsyncResource('projects', fetchProjects, []);
 
   return (
     <main className="flex-grow w-full max-w-4xl mx-auto px-container-padding py-section-gap flex flex-col gap-[96px]">

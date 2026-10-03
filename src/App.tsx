@@ -23,6 +23,7 @@ export default function App() {
         <Route path="/experience" element={<Experience />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
+        <Route path="/projects/:id/:documentId" element={<ProjectDetail />} />
       </Route>
       <Route path="/agents" element={<AgentsPage />} />
     </Routes>

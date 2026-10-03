@@ -16,21 +16,25 @@ type ThoughtPost = {
 export function BlogPost() {
   const { id } = useParams<{ id: string }>();
   const thoughtId = id ? safelyDecodeURIComponent(id) : undefined;
-  const post = useAsyncResource<ThoughtPost>(async () => {
-    if (!thoughtId) {
-      throw new Error('missing thought id');
-    }
+  const post = useAsyncResource<ThoughtPost>(
+    `thought:${thoughtId ?? ''}`,
+    async () => {
+      if (!thoughtId) {
+        throw new Error('missing thought id');
+      }
 
-    const [thoughts, body] = await Promise.all([
-      fetchThoughts().catch(() => []),
-      fetchThought(thoughtId),
-    ]);
+      const [thoughts, body] = await Promise.all([
+        fetchThoughts().catch(() => []),
+        fetchThought(thoughtId),
+      ]);
 
-    return {
-      body,
-      summary: thoughts.find((thought) => thought.id === thoughtId) ?? null,
-    };
-  }, [id]);
+      return {
+        body,
+        summary: thoughts.find((thought) => thought.id === thoughtId) ?? null,
+      };
+    },
+    [id],
+  );
 
   if (post.status === 'loading') {
     return (
