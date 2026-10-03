@@ -58,9 +58,9 @@ export function Home() {
           )}
           {projects.status === 'ready' && projects.data.slice(0, 3).map((project) => (
             <article key={project.project_id} className="flex flex-col gap-2">
-              <h3 className="font-body-md text-body-md font-bold text-primary decoration-primary underline-offset-4 w-fit">
+              <Link to={`/projects/${encodeURIComponent(project.project_id)}`} className="font-body-md text-body-md font-bold text-primary decoration-primary underline-offset-4 w-fit hover:underline">
                 {project.project_name || project.project_id}
-              </h3>
+              </Link>
               {project.brief && (
                 <p className="font-body-md text-body-md text-on-surface-variant max-w-3xl">{project.brief}</p>
               )}
