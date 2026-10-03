@@ -19,7 +19,10 @@ PORTFOLIO_HOME/
 │   └── ...
 ├── projects/
 │   └── project-id/
-│       └── README.md
+│       ├── README.md
+│       ├── architect.md
+│       └── assets/
+│           └── diagram.svg
 └── experiences.yml
 ```
 
@@ -41,9 +44,24 @@ milestones:
     brief: Started building Jarvis
 ```
 
+Each directory under `projects/` is one project. Its `README.md` supplies the
+project summary and detail page. Additional Markdown files, images, SVGs, and
+other assets can live beside it; relative Markdown links are resolved within
+the project. Project frontmatter follows
+[schemas/projects.schema.json](schemas/projects.schema.json), and supports
+fields such as `title`, `brief`, `start_date`, `status`, `tags`,
+`categories`, and `featured`.
+Projects are listed by the newest modification time among regular files in
+each project directory, including nested documents and assets. Project IDs are
+used as the stable tie-breaker when modification times are equal.
+
 Thought files support frontmatter fields such as `title`, `tags`,
-`categories`, `date`, and `brief` (or `summary`). The Markdown after the
-frontmatter is rendered as the thought body.
+`categories`, `date`, `lang`, and `brief` (or `summary`). Set `lang: zh` (or
+another `zh-*` locale) to add a two-character first-line indent to direct
+Chinese paragraphs. Set `lang: en` (or another `en-*` locale) to add a drop cap
+to the first letter of the opening paragraph. Other languages keep the default
+paragraph styling. The Markdown after the frontmatter is rendered as the
+thought body.
 
 Run the development server with `pnpm dev`.
 

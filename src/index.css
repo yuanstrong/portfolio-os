@@ -90,6 +90,21 @@ body {
   color: var(--color-on-surface);
 }
 
+/* Keep Chinese indentation scoped to thought paragraphs; do not affect global content. */
+.thought-body--zh > p {
+  text-indent: 2em;
+}
+
+/* Keep English drop caps limited to the opening paragraph of an English thought. */
+.thought-body--en > p:first-of-type::first-letter {
+  color: var(--color-primary);
+  float: left;
+  font-size: 3.4em;
+  font-weight: 700;
+  line-height: 0.82;
+  margin: 0.08em 0.12em 0 0;
+}
+
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #0a0a0a; border-left: 1px solid #222222; }
 ::-webkit-scrollbar-thumb { background: #222222; }

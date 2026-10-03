@@ -5,7 +5,10 @@ import path from 'node:path';
 import { afterEach, test } from 'node:test';
 
 import {
+  createResourceMiddleware,
   loadExperiences,
+  loadProject,
+  loadProjectAsset,
   loadProjects,
   loadThought,
   loadThoughts,
@@ -32,6 +35,7 @@ test('loads thought summaries and strips frontmatter from the detail body', asyn
       '  - interface',
       'summary: Interfaces without shadows',
       'date: 2026-09-23',
+      'lang: zh',
       '---',
       '',
       '# Zero Depth',
@@ -51,6 +55,7 @@ test('loads thought summaries and strips frontmatter from the detail body', asyn
       categories: ['interface'],
       date: Math.floor(Date.parse('2026-09-23') / 1000),
       brief: 'Interfaces without shadows',
+      lang: 'zh',
     },
   ]);
   assert.equal(thought, '# Zero Depth\n\nBody');
@@ -95,6 +100,154 @@ test('loads human-readable experience entries from experiences.yml', async () =>
   });
 });
 
+test('loads project metadata, supporting markdown documents, and static assets', async () => {
+  const home = await makePortfolioHome();
+  const projectRoot = path.join(home, 'projects', 'jarvis');
+  await fs.mkdir(path.join(projectRoot, 'assets'), { recursive: true });
+  await fs.writeFile(
+    path.join(projectRoot, 'README.md'),
+    [
+      '---',
+      'title: Jarvis',
+      'brief: A local agent runtime',
+      'start_date: 2026-01-01',
+      'tags: [agents, runtime]',
+      'categories:',
+      '  - systems',
+      'status: active',
+      '---',
+      '',
+      '# Jarvis',
+      '',
+      'Read the [architecture](architect.md).',
+      '',
+      '```mermaid',
+      'flowchart LR',
+      '  User --> Jarvis',
+      '```',
+    ].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(projectRoot, 'architect.md'),
+    [
+      '---',
+      'title: Architecture',
+      'brief: The runtime boundaries',
+      'tags: [architecture]',
+      '---',
+      '',
+      '# Architecture',
+      '',
+      'A local-first tool loop.',
+    ].join('\n'),
+  );
+  await fs.writeFile(path.join(projectRoot, 'assets', 'topology.svg'), '<svg />');
+
+  assert.deepEqual(await loadProjects(home), [
+    {
+      project_id: 'jarvis',
+      project_name: 'Jarvis',
+      start_date: '2026-01-01',
+      end_date: '',
+      brief: 'A local agent runtime',
+      tags: ['agents', 'runtime'],
+      categories: ['systems'],
+      status: 'active',
+      featured: false,
+      documents: [
+        {
+          path: 'architect.md',
+          title: 'Architecture',
+          brief: 'The runtime boundaries',
+          tags: ['architecture'],
+          categories: [],
+        },
+      ],
+    },
+  ]);
+
+  assert.deepEqual(await loadProject(home, 'jarvis'), {
+    project_id: 'jarvis',
+    project_name: 'Jarvis',
+    start_date: '2026-01-01',
+    end_date: '',
+    brief: 'A local agent runtime',
+    tags: ['agents', 'runtime'],
+    categories: ['systems'],
+    status: 'active',
+    featured: false,
+    body: '# Jarvis\n\nRead the [architecture](architect.md).\n\n```mermaid\nflowchart LR\n  User --> Jarvis\n```',
+    documents: [
+      {
+        path: 'architect.md',
+        title: 'Architecture',
+        brief: 'The runtime boundaries',
+        tags: ['architecture'],
+        categories: [],
+        body: '# Architecture\n\nA local-first tool loop.',
+      },
+    ],
+  });
+
+  const asset = await loadProjectAsset(home, 'jarvis', 'assets/topology.svg');
+  assert.equal(asset.contentType, 'image/svg+xml');
+  assert.equal(asset.body.toString(), '<svg />');
+});
+
+test('sorts projects by the newest file modification time, including nested files', async () => {
+  const home = await makePortfolioHome();
+  const olderProject = path.join(home, 'projects', 'older');
+  const newerProject = path.join(home, 'projects', 'newer');
+  await fs.mkdir(path.join(olderProject, 'docs'), { recursive: true });
+  await fs.mkdir(newerProject, { recursive: true });
+  await fs.writeFile(path.join(olderProject, 'README.md'), '---\ntitle: Older\n---\n');
+  await fs.writeFile(path.join(olderProject, 'docs', 'notes.md'), 'Updated later');
+  await fs.writeFile(path.join(newerProject, 'README.md'), '---\ntitle: Newer\n---\n');
+
+  await fs.utimes(path.join(olderProject, 'README.md'), new Date('2026-01-01'), new Date('2026-01-01'));
+  await fs.utimes(path.join(olderProject, 'docs', 'notes.md'), new Date('2026-01-03'), new Date('2026-01-03'));
+  await fs.utimes(path.join(newerProject, 'README.md'), new Date('2026-01-02'), new Date('2026-01-02'));
+
+  assert.deepEqual(
+    (await loadProjects(home)).map((project) => project.project_id),
+    ['older', 'newer'],
+  );
+});
+
+test('rejects project paths that escape the portfolio home', async () => {
+  const home = await makePortfolioHome();
+
+  await assert.rejects(
+    () => loadProject(home, '../secrets'),
+    (error) => error?.code === 'INVALID_RESOURCE_PATH',
+  );
+  await assert.rejects(
+    () => loadProjectAsset(home, 'jarvis', '../secrets.txt'),
+    (error) => error?.code === 'INVALID_RESOURCE_PATH',
+  );
+});
+
+test('serves project details and project assets through resource endpoints', async () => {
+  const home = await makePortfolioHome();
+  const projectRoot = path.join(home, 'projects', 'jarvis');
+  await fs.mkdir(path.join(projectRoot, 'assets'), { recursive: true });
+  await fs.writeFile(
+    path.join(projectRoot, 'README.md'),
+    ['---', 'title: Jarvis', '---', '', '# Jarvis'].join('\n'),
+  );
+  await fs.writeFile(path.join(projectRoot, 'assets', 'diagram.svg'), '<svg />');
+
+  const middleware = createResourceMiddleware(home);
+  const detail = await callMiddleware(middleware, '/api/v1/resources/projects/jarvis');
+  const asset = await callMiddleware(middleware, '/api/v1/resources/projects/jarvis/files/assets/diagram.svg');
+
+  assert.equal(detail.statusCode, 200);
+  assert.equal(JSON.parse(detail.body).body, '# Jarvis');
+  assert.equal(asset.statusCode, 200);
+  assert.equal(asset.contentType, 'image/svg+xml');
+  assert.equal(asset.body.toString(), '<svg />');
+});
+
 test('keeps top-level experience lists compatible with the previous JSON shape', async () => {
   const home = await makePortfolioHome();
   await fs.writeFile(
@@ -125,4 +278,25 @@ async function makePortfolioHome() {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'portfolio-home-'));
   temporaryDirectories.push(directory);
   return directory;
+}
+
+async function callMiddleware(middleware, url) {
+  const result = {
+    statusCode: 200,
+    contentType: '',
+    body: '',
+  };
+  const response = {
+    setHeader(name, value) {
+      if (name === 'content-type') {
+        result.contentType = value;
+      }
+    },
+    end(body) {
+      result.body = body;
+    },
+  };
+
+  await middleware({ method: 'GET', url }, response, () => {});
+  return result;
 }

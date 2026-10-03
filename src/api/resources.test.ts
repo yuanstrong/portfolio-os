@@ -3,12 +3,14 @@ import { afterEach, test } from 'node:test';
 
 import {
   fetchExperiences,
+  fetchProject,
   fetchProjects,
   fetchThought,
   fetchThoughts,
   formatResourceDate,
   normalizeExperiences,
 } from './resources';
+import { getThoughtBodyClassName } from '../pages/BlogPost';
 
 const originalFetch = globalThis.fetch;
 
@@ -28,6 +30,7 @@ test('fetchThoughts loads the resources thoughts endpoint', async () => {
         categories: ['interface'],
         date: 1_775_000_000,
         brief: 'Interfaces without shadows',
+        lang: 'zh',
       },
     ]);
   };
@@ -38,6 +41,7 @@ test('fetchThoughts loads the resources thoughts endpoint', async () => {
   assert.equal(thoughts[0].id, 'zero depth');
   assert.deepEqual(thoughts[0].tags, ['ui']);
   assert.deepEqual(thoughts[0].categories, ['interface']);
+  assert.equal(thoughts[0].lang, 'zh');
 });
 
 test('fetchThought encodes ids before loading markdown body', async () => {
@@ -85,6 +89,31 @@ test('fetchProjects and fetchExperiences load their resource endpoints', async (
   assert.equal(experiences.milestones[0].brief, 'Started Jarvis');
 });
 
+test('fetchProject encodes project ids before loading project details', async () => {
+  const requests: string[] = [];
+  globalThis.fetch = async (input) => {
+    requests.push(String(input));
+    return Response.json({
+      project_id: 'jarvis lab',
+      project_name: 'Jarvis Lab',
+      start_date: '2026-01-01',
+      brief: 'A local agent runtime',
+      tags: ['agents'],
+      categories: [],
+      status: 'active',
+      featured: false,
+      body: '# Jarvis Lab',
+      documents: [],
+    });
+  };
+
+  const project = await fetchProject('jarvis lab');
+
+  assert.deepEqual(requests, ['/api/v1/resources/projects/jarvis%20lab']);
+  assert.equal(project.project_name, 'Jarvis Lab');
+  assert.deepEqual(project.tags, ['agents']);
+});
+
 test('normalizeExperiences accepts both array and object resources', () => {
   assert.deepEqual(
     normalizeExperiences([{ title: 'Builder', organization: 'Lab', period: '2025' }])
@@ -100,4 +129,11 @@ test('normalizeExperiences accepts both array and object resources', () => {
 
 test('formatResourceDate converts unix seconds to an ISO date label', () => {
   assert.equal(formatResourceDate(0), '1970-01-01');
+});
+
+test('maps thought languages to scoped body presentation classes', () => {
+  assert.equal(getThoughtBodyClassName('zh'), 'thought-body thought-body--zh');
+  assert.equal(getThoughtBodyClassName('zh-Hans'), 'thought-body thought-body--zh');
+  assert.equal(getThoughtBodyClassName('en'), 'thought-body thought-body--en');
+  assert.equal(getThoughtBodyClassName(''), 'thought-body');
 });

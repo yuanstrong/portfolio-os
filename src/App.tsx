@@ -10,6 +10,7 @@ import { Thoughts } from './pages/Thoughts';
 import { Experience } from './pages/Experience';
 import { Projects } from './pages/Projects';
 import { BlogPost } from './pages/BlogPost';
+import { ProjectDetail } from './pages/ProjectDetail';
 import { AgentsPage } from './pages/Agents';
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/thoughts/:id" element={<BlogPost />} />
         <Route path="/experience" element={<Experience />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:id" element={<ProjectDetail />} />
       </Route>
       <Route path="/agents" element={<AgentsPage />} />
     </Routes>

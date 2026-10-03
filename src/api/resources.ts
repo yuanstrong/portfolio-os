@@ -5,13 +5,33 @@ export type ThoughtSummary = {
   categories: string[];
   date: number;
   brief: string;
+  lang?: string;
 };
 
 export type ProjectSummary = {
   project_name: string;
   project_id: string;
   start_date: string;
+  end_date: string;
   brief: string;
+  tags: string[];
+  categories: string[];
+  status: string;
+  featured: boolean;
+  documents: ProjectDocument[];
+};
+
+export type ProjectDocument = {
+  path: string;
+  title: string;
+  brief: string;
+  tags: string[];
+  categories: string[];
+};
+
+export type ProjectDetails = Omit<ProjectSummary, 'documents'> & {
+  body: string;
+  documents: Array<ProjectDocument & { body: string }>;
 };
 
 export type ExperienceEntry = {
@@ -68,6 +88,10 @@ export async function fetchThought(id: string): Promise<string> {
 
 export async function fetchProjects(): Promise<ProjectSummary[]> {
   return fetchJson<ProjectSummary[]>('/api/v1/resources/projects');
+}
+
+export async function fetchProject(id: string): Promise<ProjectDetails> {
+  return fetchJson<ProjectDetails>(`/api/v1/resources/projects/${encodeURIComponent(id)}`);
 }
 
 export async function fetchExperiences(): Promise<ExperienceResource> {

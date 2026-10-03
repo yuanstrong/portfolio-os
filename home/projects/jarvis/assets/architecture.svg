@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" role="img" aria-labelledby="title desc">
+  <title id="title">Jarvis architecture</title>
+  <desc id="desc">A request flows through the kernel and permission policy to local tools and inspectable state.</desc>
+  <rect width="900" height="220" fill="#0a0a0a"/>
+  <g fill="none" stroke="#10b981" stroke-width="2">
+    <rect x="40" y="80" width="150" height="60"/>
+    <rect x="250" y="80" width="150" height="60"/>
+    <rect x="460" y="80" width="150" height="60"/>
+    <rect x="670" y="80" width="190" height="60"/>
+    <path d="M190 110h60M400 110h60M610 110h60"/>
+    <path d="m238 103 12 7-12 7M448 103l12 7-12 7M658 103l12 7-12 7"/>
+  </g>
+  <g fill="#e5e7eb" font-family="monospace" font-size="18" text-anchor="middle">
+    <text x="115" y="116">REQUEST</text>
+    <text x="325" y="116">KERNEL</text>
+    <text x="535" y="116">POLICY</text>
+    <text x="765" y="116">LOCAL TOOLS</text>
+  </g>
+</svg>

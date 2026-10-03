@@ -21,9 +21,9 @@ export function Home() {
     <main className="flex-grow w-full max-w-4xl mx-auto px-container-padding py-section-gap flex flex-col gap-[96px]">
       {/* Hero Section */}
       <section className="flex flex-col gap-unit">
-        <h1 className="font-headline-lg text-headline-lg text-on-surface">shiming_yuan</h1>
+        <h1 className="font-headline-lg text-headline-lg text-on-surface">Shiming Yuan</h1>
         <p className="font-headline-md text-headline-md text-on-surface-variant max-w-2xl mt-4">
-          Crafting robust digital experiences. Specializing in highly scalable infrastructure, deep technical architecture, and brutalist interfaces.
+          Curiosity-driven by nature, builder by choice. Driven by elegant architecture, low-level efficiency, and a keen eye for aesthetic precision.
         </p>
       </section>
 

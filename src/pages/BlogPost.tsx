@@ -59,6 +59,8 @@ export function BlogPost() {
   const date = post.data.summary ? formatResourceDate(post.data.summary.date) : '';
   const tags = post.data.summary?.tags ?? [];
   const categories = post.data.summary?.categories ?? [];
+  const language = post.data.summary?.lang ?? '';
+  const bodyClassName = getThoughtBodyClassName(language);
 
   return (
     <main className="flex-grow w-full max-w-4xl mx-auto px-container-padding py-section-gap flex flex-col">
@@ -84,7 +86,7 @@ export function BlogPost() {
           </div>
         </header>
 
-        <div className="flex flex-col w-full gap-2">
+        <div className={`${bodyClassName} flex flex-col w-full gap-2`} lang={language || undefined}>
           <Markdown
             remarkPlugins={[remarkGfm]}
             components={{
@@ -139,6 +141,16 @@ export function BlogPost() {
       </article>
     </main>
   );
+}
+
+export function getThoughtBodyClassName(language: string): string {
+  if (/^zh(?:-|$)/i.test(language)) {
+    return 'thought-body thought-body--zh';
+  }
+  if (/^en(?:-|$)/i.test(language)) {
+    return 'thought-body thought-body--en';
+  }
+  return 'thought-body';
 }
 
 function safelyDecodeURIComponent(value: string): string {

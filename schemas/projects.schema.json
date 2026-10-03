@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "projects.schema.json",
+  "title": "Portfolio project Markdown frontmatter",
+  "description": "The frontmatter structure for PORTFOLIO_HOME/projects/<project_id>/README.md and supporting Markdown documents.",
+  "type": "object",
+  "additionalProperties": false,
+  "anyOf": [
+    { "required": ["title"] },
+    { "required": ["project_name"] }
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display title. README.md uses this as the project name."
+    },
+    "project_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Backward-compatible project name alias for title."
+    },
+    "brief": {
+      "type": "string",
+      "description": "Short description shown on the projects list."
+    },
+    "summary": {
+      "type": "string",
+      "description": "Backward-compatible alias for brief."
+    },
+    "start_date": {
+      "type": ["string", "integer"],
+      "description": "Project start date or human-readable start label."
+    },
+    "end_date": {
+      "type": ["string", "integer"],
+      "description": "Project end date or present label."
+    },
+    "date": {
+      "type": ["string", "integer"],
+      "description": "Backward-compatible date alias for start_date."
+    },
+    "status": {
+      "type": "string",
+      "description": "Project status, such as active, archived, or experimental."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "labels": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Backward-compatible alias for tags."
+    },
+    "categories": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to highlight the project in a featured list."
+    }
+  }
+}
